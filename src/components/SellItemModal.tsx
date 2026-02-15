@@ -117,7 +117,7 @@ export default function SellItemModal({ isOpen, onClose, onSuccess }: SellItemMo
           category: formData.category,
           condition: formData.condition,
           price: parseFloat(formData.price),
-          image_url: imageUrl || null,
+          image_url: imageUrl || '',
           seller_name: formData.sellerName,
           seller_phone: sellerPhone,
         },
