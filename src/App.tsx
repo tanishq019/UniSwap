@@ -228,6 +228,20 @@ function App() {
     );
   };
 
+  const handleDeleteProduct = async (product: Product) => {
+    const shouldDelete = window.confirm(`Delete "${product.title}"? This cannot be undone.`);
+    if (!shouldDelete) return;
+
+    const { error } = await supabase.from('products').delete().eq('id', product.id);
+    if (error) {
+      alert(error.message || 'Failed to delete product.');
+      return;
+    }
+
+    setSelectedProduct(null);
+    await fetchProducts();
+  };
+
   const resolveDisplayImage = (product: Product) => (product.image_url || '').trim();
 
   const hasRealImage = (product: Product) => {
@@ -743,6 +757,7 @@ function App() {
           setSelectedProduct(null);
           setEditingProduct(product);
         }}
+        onDelete={handleDeleteProduct}
       />
 
       <EditItemModal

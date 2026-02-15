@@ -117,7 +117,7 @@ export default function SellItemModal({ isOpen, onClose, onSuccess }: SellItemMo
           category: formData.category,
           condition: formData.condition,
           price: parseFloat(formData.price),
-          image_url: imageUrl,
+          image_url: imageUrl || null,
           seller_name: formData.sellerName,
           seller_phone: sellerPhone,
         },
@@ -332,7 +332,7 @@ export default function SellItemModal({ isOpen, onClose, onSuccess }: SellItemMo
                   </label>
                 </div>
                 <p className="text-xs text-muted mt-2">
-                  Supports JPEG/PNG/web images. If both are empty, a default image will be used.
+                  Supports JPEG/PNG/web images. If both are empty, a gradient placeholder will be shown.
                 </p>
                 {imageFile && (
                   <p className="text-xs text-emerald-400 mt-1">

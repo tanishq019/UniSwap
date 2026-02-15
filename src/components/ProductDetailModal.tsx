@@ -1,13 +1,14 @@
-import { X, MessageCircle, Pencil } from 'lucide-react';
+import { X, MessageCircle, Pencil, Trash2 } from 'lucide-react';
 import { Product } from '../lib/supabase';
 
 interface ProductDetailModalProps {
   product: Product | null;
   onClose: () => void;
   onEdit: (product: Product) => void;
+  onDelete: (product: Product) => void;
 }
 
-export default function ProductDetailModal({ product, onClose, onEdit }: ProductDetailModalProps) {
+export default function ProductDetailModal({ product, onClose, onEdit, onDelete }: ProductDetailModalProps) {
   if (!product) return null;
 
   const handleWhatsApp = () => {
@@ -19,6 +20,8 @@ export default function ProductDetailModal({ product, onClose, onEdit }: Product
       '_blank'
     );
   };
+
+  const hasImage = Boolean((product.image_url || '').trim());
 
   return (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 animate-fadeIn">
@@ -34,11 +37,19 @@ export default function ProductDetailModal({ product, onClose, onEdit }: Product
         </div>
 
         <div className="p-6">
-          <img
-            src={product.image_url}
-            alt={product.title}
-            className="w-full h-80 object-cover rounded-xl mb-6"
-          />
+          {hasImage ? (
+            <img
+              src={product.image_url}
+              alt={product.title}
+              className="w-full h-80 object-cover rounded-xl mb-6"
+            />
+          ) : (
+            <div className="w-full h-80 rounded-xl mb-6 flex items-center justify-center text-center p-6 bg-gradient-to-br from-indigo-600 to-slate-700">
+              <h3 className="text-white text-4xl font-extrabold leading-tight line-clamp-3">
+                {product.title}
+              </h3>
+            </div>
+          )}
 
           <div className="flex items-start justify-between mb-4 gap-3">
             <div>
@@ -73,13 +84,20 @@ export default function ProductDetailModal({ product, onClose, onEdit }: Product
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-3">
+          <div className="grid sm:grid-cols-3 gap-3">
             <button
               onClick={() => onEdit(product)}
               className="w-full ghost-button font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
               <Pencil className="w-5 h-5" />
               Edit Listing
+            </button>
+            <button
+              onClick={() => onDelete(product)}
+              className="w-full bg-rose-500/15 text-rose-300 border border-rose-500/40 font-semibold py-3 px-6 rounded-lg transition-colors hover:bg-rose-500/25 flex items-center justify-center gap-2"
+            >
+              <Trash2 className="w-5 h-5" />
+              Delete Listing
             </button>
             <button
               onClick={handleWhatsApp}
