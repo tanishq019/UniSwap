@@ -28,80 +28,6 @@ const descriptionSuggestions: Record<string, string> = {
   Miscellaneous: 'Useful campus item in reliable condition. Can be inspected before purchase.',
 };
 
-const categoryFallbackImage: Record<string, string> = {
-  Books:
-    'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=1200&auto=format&fit=crop',
-  Electronics:
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&auto=format&fit=crop',
-  'Lab Gear':
-    'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200&auto=format&fit=crop',
-  Cycles:
-    'https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=1200&auto=format&fit=crop',
-  'Engineering Drawing':
-    'https://images.unsplash.com/photo-1516382799247-87df95d790b7?w=1200&auto=format&fit=crop',
-  Miscellaneous:
-    'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&auto=format&fit=crop',
-};
-
-const keywordBasedSuggestions: Array<{ pattern: RegExp; image: string }> = [
-  {
-    pattern: /\b(calculator|casio|fx[-\s]?991|scientific)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1564473185935-581de2f4ab12?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(laptop|macbook|notebook|pc)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(headphone|earphone|airpods|earbud|audio|speaker)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(phone|iphone|android|mobile|smartphone)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(chair|table|desk|furniture)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(cycle|bicycle|bike)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1544191696-102dbdaeeaa0?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(book|novel|textbook|notes|guide)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(lab|microscope|beaker|pipette|chemistry)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&auto=format&fit=crop',
-  },
-  {
-    pattern: /\b(drawing|drafting|engineering|sheet|compass)\b/i,
-    image:
-      'https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?w=1200&auto=format&fit=crop',
-  },
-];
-
-const getSmartFallbackImage = (payload: {
-  title: string;
-  description: string;
-  category: string;
-}) => {
-  const context = `${payload.title} ${payload.description} ${payload.category}`.toLowerCase();
-  const matched = keywordBasedSuggestions.find((item) => item.pattern.test(context));
-  if (matched) return matched.image;
-  return categoryFallbackImage[payload.category] || categoryFallbackImage.Miscellaneous;
-};
-
 const normalizePhone = (countryCode: string, rawPhone: string) => {
   const trimmed = rawPhone.trim();
   if (!trimmed) return '';
@@ -180,14 +106,6 @@ export default function SellItemModal({ isOpen, onClose, onSuccess }: SellItemMo
 
         const { data: publicData } = supabase.storage.from('product-images').getPublicUrl(fileName);
         imageUrl = publicData.publicUrl;
-      }
-
-      if (!imageUrl) {
-        imageUrl = getSmartFallbackImage({
-          title: formData.title,
-          description: formData.description,
-          category: formData.category,
-        });
       }
 
       const sellerPhone = normalizePhone(countryCode, formData.sellerPhone);
