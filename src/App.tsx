@@ -29,23 +29,6 @@ const categories = [
 type ThemeMode = 'day' | 'night';
 type AppView = 'marketplace' | 'profile' | 'settings';
 
-const FALLBACKS: Record<string, string> = {
-  Electronics:
-    'https://images.unsplash.com/photo-1550009158-9ebf69173e03?auto=format&fit=crop&q=80',
-  Books:
-    'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80',
-  Cycles:
-    'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&q=80',
-  'Lab Gear':
-    'https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80',
-  'Engineering Drawing':
-    'https://images.unsplash.com/photo-1516382799247-87df95d790b7?auto=format&fit=crop&q=80',
-  Miscellaneous:
-    'https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?auto=format&fit=crop&q=80',
-  default:
-    'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80',
-};
-
 const BANNER_PALETTES = [
   ['#2b2f77', '#4f46e5'],
   ['#1d4d7a', '#0ea5e9'],
@@ -87,6 +70,7 @@ function App() {
   const [showSellModal, setShowSellModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [brokenImageIds, setBrokenImageIds] = useState<Record<string, true>>({});
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -244,17 +228,11 @@ function App() {
     );
   };
 
-  const resolveDisplayImage = (product: Product) => {
-    const image = (product.image_url || '').trim();
-    if (!image || image.startsWith('data:image/svg')) {
-      return FALLBACKS[product.category] || FALLBACKS.default;
-    }
-    return image;
-  };
+  const resolveDisplayImage = (product: Product) => (product.image_url || '').trim();
 
   const hasRealImage = (product: Product) => {
     const image = (product.image_url || '').trim();
-    return Boolean(image) && !image.startsWith('data:image/svg');
+    return Boolean(image) && !image.startsWith('data:image/svg') && !brokenImageIds[product.id];
   };
 
   const getBannerStyle = (product: Product) => {
@@ -595,7 +573,8 @@ function App() {
                                   alt={product.title}
                                   className="absolute inset-0 h-full w-full object-cover transition-all duration-700 group-hover:scale-110"
                                   onError={(e) => {
-                                    e.currentTarget.src = FALLBACKS.default;
+                                    e.currentTarget.style.display = 'none';
+                                    setBrokenImageIds((prev) => ({ ...prev, [product.id]: true }));
                                   }}
                                 />
                               </>
@@ -680,7 +659,8 @@ function App() {
                               alt={product.title}
                               className="h-48 w-full object-cover relative z-[1]"
                               onError={(e) => {
-                                e.currentTarget.src = FALLBACKS.default;
+                                e.currentTarget.style.display = 'none';
+                                setBrokenImageIds((prev) => ({ ...prev, [product.id]: true }));
                               }}
                             />
                           </>
